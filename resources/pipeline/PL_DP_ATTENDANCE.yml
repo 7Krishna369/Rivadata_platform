@@ -1,0 +1,53 @@
+resources:
+  jobs:
+    PL_DP_Attendance:
+      name: PL_DP_Attendance
+      tasks:
+        - task_key: ts_sourse2landing
+          notebook_task:
+            notebook_path: /Workspace/Users/krishnadataen@gmail.com/Rivadata_platform/src/notebooks/ds2landing_2026-08-10
+              20:18:08
+            source: WORKSPACE
+        - task_key: ts_landing2dim_batch
+          depends_on:
+            - task_key: ts_sourse2landing
+          sql_task:
+            query:
+              query_id: ed36bc81-decf-40de-9b60-3844ebdc44d9
+            warehouse_id: 302ee426fd1b6860
+        - task_key: ts_landing2dim_class
+          depends_on:
+            - task_key: ts_sourse2landing
+          sql_task:
+            query:
+              query_id: e9240cd1-d901-44f0-ab7b-dd3fa0debcc7
+            warehouse_id: 302ee426fd1b6860
+        - task_key: ts_landing2dim_date
+          depends_on:
+            - task_key: ts_sourse2landing
+          sql_task:
+            query:
+              query_id: ca344eec-20a5-4828-96c8-080dd051164f
+            warehouse_id: 302ee426fd1b6860
+        - task_key: ts_landing2dim_student
+          depends_on:
+            - task_key: ts_sourse2landing
+          sql_task:
+            file:
+              path: /Workspace/Users/krishnadataen@gmail.com/Rivadata_platform/src/queries/dimensions/dim_student.sql
+              source: WORKSPACE
+            warehouse_id: 302ee426fd1b6860
+        - task_key: ts_landing2fact_attendence
+          depends_on:
+            - task_key: ts_landing2dim_batch
+            - task_key: ts_landing2dim_class
+            - task_key: ts_landing2dim_student
+            - task_key: ts_landing2dim_date
+          sql_task:
+            file:
+              path: /Workspace/Users/krishnadataen@gmail.com/Rivadata_platform/src/queries/facts/fact_attendance.sql
+              source: WORKSPACE
+            warehouse_id: 302ee426fd1b6860
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
